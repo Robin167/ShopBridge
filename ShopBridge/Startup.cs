@@ -7,6 +7,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using ShopBridge.DAL;
 using ShopBridge.Entities;
 using System;
 using System.Collections.Generic;
@@ -31,11 +32,7 @@ namespace ShopBridge
             services
                 .AddDbContext<InventoryDBContext>(options
                     => options.UseSqlServer(Configuration["ConnectionStrings"]));
-            //services.AddControllers();
-
-            //services
-            //    .AddDbContext<InventoryDBContext>(options
-            //        => options.UseSqlServer("Server=MD2TVM6C;Database=InventoryDB;Trusted_Connection=True;"));
+            services.AddScoped<IItemRepository, ItemRepository>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

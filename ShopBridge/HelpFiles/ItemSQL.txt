@@ -1,7 +1,7 @@
 USE [InventoryDB]
 GO
 
-/****** Object:  Table [dbo].[Items]    Script Date: 9/3/2021 6:56:28 PM ******/
+/****** Object:  Table [dbo].[Items]    Script Date: 9/19/2021 12:43:01 PM ******/
 SET ANSI_NULLS ON
 GO
 
@@ -21,5 +21,4 @@ CREATE TABLE [dbo].[Items](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-
 

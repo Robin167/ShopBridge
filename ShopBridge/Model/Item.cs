@@ -1,4 +1,6 @@
-﻿using System;
+﻿
+using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -9,6 +11,7 @@ namespace ShopBridge.Model
     public class Item
     {
         [Required]
+        
         public string Name { get; set; }
 
         [Required]
@@ -20,6 +23,14 @@ namespace ShopBridge.Model
         [Required]
         public string Brand { get; set; }
 
+        
         public DateTime? ExpiryDate { get; set; }
+
+        [Required]
+        public string ImageFolderPath { get; set; }
+
+        public List<byte[]> ImageData { get; set; }
     }
+
+    
 }

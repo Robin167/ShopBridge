@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json.Linq;
-using ShopBridge.Entities;
+using ShopBridge.DAL;
 using ShopBridge.Model;
 using System;
 using System.Collections.Generic;
@@ -14,10 +14,10 @@ namespace ShopBridge.Controllers
     [Route("[controller]")]
     public class ItemController : ControllerBase
     {
-        private InventoryDBContext dbContext;
-        public ItemController(InventoryDBContext inventoryDBContext)
+        private IItemRepository ItemRepository;
+        public ItemController(IItemRepository itemRepository)
         {
-            dbContext = inventoryDBContext;
+            this.ItemRepository = itemRepository;
         }
 
         [HttpPost]
@@ -31,9 +31,7 @@ namespace ShopBridge.Controllers
                     return BadRequest();
                 }
 
-                ItemEntity ItemToBeAdded = new ItemEntity() { Name = item.Name, Brand = item.Brand, Description = item.Description, Price = item.Price, ExpiryDate = item.ExpiryDate };
-                await this.dbContext.AddAsync(ItemToBeAdded);
-                this.dbContext.SaveChanges();
+                await ItemRepository.AddItem(item);
                 return Ok("Sucessfully Added");
             }
             catch (Exception e)
@@ -45,34 +43,28 @@ namespace ShopBridge.Controllers
         [HttpGet]
         public async Task<ActionResult> GetAllItems()
         {
-            var AllItems =  await this.dbContext.Items.Select(p => new Item
-            {
-                Name = p.Name,
-                Description = p.Description,
-                Brand = p.Brand,
-                Price = p.Price,
-                ExpiryDate = p.ExpiryDate
-            }).ToListAsync();
-
-            if(AllItems.Count == 0)
+            int count = 1;
+            var AllItems = await ItemRepository.GetAllItems();
+            if(AllItems == null)
             {
                 return NotFound();
             }
-
-            return Ok(AllItems);
+            
+            return Ok(AllItems.Select(a => new JsonData()
+            {
+                Number = count++,
+                Name = a.Name, Brand = a.Brand,Description = a.Description,Price = a.Price,Images = a.ImageData
+            }));
         }
 
         [HttpDelete]
         public async Task<ActionResult> DeleteItemUsingQuery([FromQuery] int id)
         {
-            var itemToBeDeleted = await this.dbContext.Items.FindAsync(id);
-            if (itemToBeDeleted == null)
+            bool result = await this.ItemRepository.DeleteItem(id);
+            if (result == false)
             {
                 return NotFound();
             }
-
-            this.dbContext.Items.Remove(itemToBeDeleted);
-            await this.dbContext.SaveChangesAsync();
 
             return Ok();
         }
@@ -80,14 +72,11 @@ namespace ShopBridge.Controllers
         [HttpDelete("{id}")]
         public async Task<ActionResult> DeleteItemUsingURL(int id)
         {
-            var itemToBeDeleted = await this.dbContext.Items.FindAsync(id);
-            if (itemToBeDeleted == null)
+            bool result = await this.ItemRepository.DeleteItem(id);
+            if (result == false)
             {
                 return NotFound();
             }
-
-            this.dbContext.Items.Remove(itemToBeDeleted);
-            await this.dbContext.SaveChangesAsync();
 
             return Ok();
         }
@@ -95,28 +84,13 @@ namespace ShopBridge.Controllers
         [HttpPut("{id}")]
         public async Task<ActionResult> UpdateItem(int id,[FromBody]Item i)
         {
-            var itemToBeUpdated = await dbContext.Items.FindAsync(id);
-            if(itemToBeUpdated == null)
+            var result = await this.ItemRepository.UpdateItem(id, i);
+            if(result == false)
             {
                 return NotFound();
             }
-
-            itemToBeUpdated.Name = i.Name;
-            itemToBeUpdated.Description = i.Description;
-            itemToBeUpdated.Brand = i.Brand;
-            itemToBeUpdated.Price = i.Price;
-            itemToBeUpdated.ExpiryDate = i.ExpiryDate;
-            try
-            {
-                await dbContext.SaveChangesAsync();
-            }
-
-            catch(DbUpdateConcurrencyException e)
-            {
-                
-            }
-            
             return Ok();
         }
     }
 }
+

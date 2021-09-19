@@ -1,0 +1,20 @@
+1) Set Database with name 'InventoryDB'
+2) Run ItemSQL.txt and ImageSQL.txt files in Server to create the Database Item and SQL
+3) Run the ShopBridge Application , which will listen at sslPort:44387
+5) Trigger POST,GET,DELETE and PUT from Postman
+
+Example:
+Operation	   URL
+POST	       https://localhost:44387/Item
+GET	           https://localhost:44387/Item
+PUT	           https://localhost:44387/Item/{id}
+DELETE	       https://localhost:44387/Item/{id}
+
+SampleBody for POST and UPDATE:
+{
+	"Name":"ABCD_1235547897",
+	"Description":"YUI_desc",
+	"Price":"20",
+	"Brand":"Brand_YUI",
+	"ImageFolderPath":"D:\\Image"
+}
