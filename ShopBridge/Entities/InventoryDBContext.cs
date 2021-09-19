@@ -17,6 +17,7 @@ namespace ShopBridge.Entities
         {
         }
 
+        public virtual DbSet<ImageEntity> Images { get; set; }
         public virtual DbSet<ItemEntity> Items { get; set; }
 
 //        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -32,8 +33,31 @@ namespace ShopBridge.Entities
         {
             modelBuilder.HasAnnotation("Relational:Collation", "SQL_Latin1_General_CP1_CI_AS");
 
+            modelBuilder.Entity<ImageEntity>(entity =>
+            {
+                entity.ToTable("Image");
+
+                entity.Property(e => e.ImageId).HasColumnName("ImageID");
+
+                entity.Property(e => e.ImageData).IsRequired();
+
+                entity.Property(e => e.ImageTitle)
+                    .IsRequired()
+                    .HasMaxLength(20);
+
+                entity.Property(e => e.ItemId).HasColumnName("ItemID");
+
+                entity.HasOne(d => d.Item)
+                    .WithMany(p => p.Images)
+                    .HasForeignKey(d => d.ItemId)
+                    .HasConstraintName("FK_Image_Items");
+            });
+
             modelBuilder.Entity<ItemEntity>(entity =>
             {
+                entity.HasIndex(e => e.Name, "IX_Items_Name")
+                    .IsUnique();
+
                 entity.Property(e => e.Brand)
                     .IsRequired()
                     .HasMaxLength(10);
