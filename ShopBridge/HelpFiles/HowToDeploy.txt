@@ -18,3 +18,5 @@ SampleBody for POST and UPDATE:
 	"Brand":"Brand_YUI",
 	"ImageFolderPath":"D:\\Image"
 }
+
+
